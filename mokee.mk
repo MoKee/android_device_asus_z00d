@@ -2,22 +2,22 @@
 TARGET_SCREEN_HEIGHT := 1280
 TARGET_SCREEN_WIDTH := 720
 
-# Inherit some common CM stuff.
+# Inherit some common MK stuff.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
 # Inherit device configuration
-$(call inherit-product, device/asus/Z00D/device.mk)
+$(call inherit-product, device/asus/z00d/device.mk)
 
-$(call inherit-product, vendor/cm/config/common_full_phone.mk)
+$(call inherit-product, vendor/mk/config/common_full_phone.mk)
 
 PRODUCT_RUNTIMES := runtime_libart_default
 
 ## Device identifier. This must come after all inclusions
-PRODUCT_NAME := lineage_Z00D
+PRODUCT_NAME := mk_z00d
 PRODUCT_BRAND := asus
 PRODUCT_MODEL := Z00D
 PRODUCT_MANUFACTURER := asus
-PRODUCT_DEVICE := Z00D
+PRODUCT_DEVICE := z00d
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
     PRODUCT_NAME=WW_Phone \

@@ -18,7 +18,7 @@
 $(call inherit-product-if-exists, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 
 DEVICE_PACKAGE_OVERLAYS := \
-    device/asus/Z00D/overlay
+    device/asus/z00d/overlay
 
 # Art
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -38,13 +38,13 @@ PRODUCT_PACKAGES += \
     audio.usb.default
 
 PRODUCT_COPY_FILES += \
-    device/asus/Z00D/audio/asound.conf:system/etc/asound.conf \
-    device/asus/Z00D/audio/audio_policy.conf:system/etc/audio_policy.conf \
-    device/asus/Z00D/audio/route_criteria.conf:system/etc/route_criteria.conf
+    device/asus/z00d/audio/asound.conf:system/etc/asound.conf \
+    device/asus/z00d/audio/audio_policy.conf:system/etc/audio_policy.conf \
+    device/asus/z00d/audio/route_criteria.conf:system/etc/route_criteria.conf
 
 # Bluetooth
 PRODUCT_COPY_FILES += \
-    device/asus/Z00D/bluetooth/bt_vendor.conf:system/etc/bluetooth/bt_vendor.conf
+    device/asus/z00d/bluetooth/bt_vendor.conf:system/etc/bluetooth/bt_vendor.conf
 
 PRODUCT_PROPERTY_OVERRIDES += \
     bt.hfp.WideBandSpeechEnabled=true
@@ -76,13 +76,13 @@ PRODUCT_PACKAGES += \
     libshim_gps
 
 PRODUCT_COPY_FILES += \
-    device/asus/Z00D/configs/gps.conf:system/etc/gps.conf \
-    device/asus/Z00D/configs/gps.xml:system/etc/gps.xml \
-    device/asus/Z00D/configs/gps_logcat.xml:system/etc/gps_logcat.xml \
-    device/asus/Z00D/configs/gps_rs.xml:system/etc/gps_rs.xml \
-    device/asus/Z00D/configs/gps_spirent.xml:system/etc/gps_spirent.xml \
-    device/asus/Z00D/configs/gps_spirent_areaid.xml:system/etc/gps_spirent_areaid.xml \
-    device/asus/Z00D/configs/gps_spirent_hslp.xml:system/etc/gps_spirent_hslp.xml
+    device/asus/z00d/configs/gps.conf:system/etc/gps.conf \
+    device/asus/z00d/configs/gps.xml:system/etc/gps.xml \
+    device/asus/z00d/configs/gps_logcat.xml:system/etc/gps_logcat.xml \
+    device/asus/z00d/configs/gps_rs.xml:system/etc/gps_rs.xml \
+    device/asus/z00d/configs/gps_spirent.xml:system/etc/gps_spirent.xml \
+    device/asus/z00d/configs/gps_spirent_areaid.xml:system/etc/gps_spirent_areaid.xml \
+    device/asus/z00d/configs/gps_spirent_hslp.xml:system/etc/gps_spirent_hslp.xml
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.spid.gps.pmm=disabled \
@@ -98,10 +98,10 @@ ADDITIONAL_DEFAULT_PROPERTIES += ro.dalvik.vm.native.bridge=libhoudini.so
 
 # Key layout files
 PRODUCT_COPY_FILES += \
-    device/asus/Z00D/keylayout/cloverview_audio_Intel_MID_Audio_Jack.kl:system/usr/keylayout/cloverview_audio_Intel_MID_Audio_Jack.kl \
-    device/asus/Z00D/keylayout/ASUS_TransKeyboard.kl:system/usr/keylayout/ASUS_TransKeyboard.kl \
-    device/asus/Z00D/keylayout/gpio-keys.kl:system/usr/keylayout/gpio-keys.kl \
-    device/asus/Z00D/keylayout/focal-touchscreen.kl:system/usr/keylayout/focal-touchscreen.kl 
+    device/asus/z00d/keylayout/cloverview_audio_Intel_MID_Audio_Jack.kl:system/usr/keylayout/cloverview_audio_Intel_MID_Audio_Jack.kl \
+    device/asus/z00d/keylayout/ASUS_TransKeyboard.kl:system/usr/keylayout/ASUS_TransKeyboard.kl \
+    device/asus/z00d/keylayout/gpio-keys.kl:system/usr/keylayout/gpio-keys.kl \
+    device/asus/z00d/keylayout/focal-touchscreen.kl:system/usr/keylayout/focal-touchscreen.kl 
 
 # Keystore
 PRODUCT_PACKAGES += \
@@ -117,9 +117,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.com.widevine.cachesize=16777216
 
 PRODUCT_COPY_FILES += \
-    device/asus/Z00D/media/media_codecs.xml:system/etc/media_codecs.xml \
-    device/asus/Z00D/media/media_profiles.xml:system/etc/media_profiles.xml \
-    device/asus/Z00D/media/wrs_omxil_components.list:system/etc/wrs_omxil_components.list \
+    device/asus/z00d/media/media_codecs.xml:system/etc/media_codecs.xml \
+    device/asus/z00d/media/media_profiles.xml:system/etc/media_profiles.xml \
+    device/asus/z00d/media/wrs_omxil_components.list:system/etc/wrs_omxil_components.list \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml
 
@@ -210,10 +210,10 @@ PRODUCT_PACKAGES += \
     libshim_sensors
 
 PRODUCT_COPY_FILES += \
-    device/asus/Z00D/configs/sensor_hal_config_default.xml:system/etc/sensor_hal_config_default.xml \
-    device/asus/Z00D/configs/sensor_hal_config_general_default.xml:system/etc/sensor_hal_config_general_default.xml \
-    device/asus/Z00D/configs/sensor_hal_config_general_scale-pr1.xml:system/etc/sensor_hal_config_general_scale-pr1.xml \
-    device/asus/Z00D/configs/sensor_hal_config_scale-pr1.xml:system/etc/sensor_hal_config_scale-pr1.xml 
+    device/asus/z00d/configs/sensor_hal_config_default.xml:system/etc/sensor_hal_config_default.xml \
+    device/asus/z00d/configs/sensor_hal_config_general_default.xml:system/etc/sensor_hal_config_general_default.xml \
+    device/asus/z00d/configs/sensor_hal_config_general_scale-pr1.xml:system/etc/sensor_hal_config_general_scale-pr1.xml \
+    device/asus/z00d/configs/sensor_hal_config_scale-pr1.xml:system/etc/sensor_hal_config_scale-pr1.xml 
 
 # pvr
 PRODUCT_PACKAGES += \
@@ -258,9 +258,9 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf
 
 PRODUCT_COPY_FILES += \
-    device/asus/Z00D/configs/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf
+    device/asus/z00d/configs/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf
 
-$(call inherit-product-if-exists, vendor/asus/Z00D/Z00D-vendor.mk)
+$(call inherit-product-if-exists, vendor/asus/z00d/z00d-vendor.mk)
 
 # Intel_updater
 PRODUCT_PACKAGES += \
@@ -287,7 +287,7 @@ PRODUCT_PACKAGES += \
     tinymix
 
 PRODUCT_COPY_FILES += \
-    device/asus/Z00D/audio/silence.wav:system/etc/silence.wav
+    device/asus/z00d/audio/silence.wav:system/etc/silence.wav
 
 # Add WiFi Firmware
 $(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4339/device-bcm.mk)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEVICE=Z00D
+DEVICE=z00d
 VENDOR=asus
 
 OUTDIR=vendor/$VENDOR/$DEVICE

@@ -1,5 +1,9 @@
 [
   {
+    "repository": "android_vendor_asus_z00d",
+    "target_path": "vendor/asus/z00d"
+  },
+  {
     "repository": "android_external_stlport",
     "target_path": "external/stlport"
   },
@@ -8,7 +12,7 @@
     "target_path": "packages/resources/devicesettings"
   },
   {
-    "repository": "android_kernel_asus_Z00D",
-    "target_path": "kernel/asus/Z00D"
+    "repository": "android_kernel_asus_z00d",
+    "target_path": "kernel/asus/z00d"
   }
 ]
