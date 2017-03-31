@@ -34,8 +34,9 @@ TARGET_SPECIFIC_HEADER_PATH := device/asus/z00d/include
 
 TARGET_DROIDBOOT_LIBS := libintel_droidboot
 
+TARGET_RELEASETOOL_MAKE_RECOVERY_PATCH_SCRIPT := ./device/asus/z00d/make_recovery_patch
+
 # OTA Packaging / Bootimg creation
-BOARD_USES_FULL_RECOVERY_IMAGE := true
 BOARD_CUSTOM_MKBOOTIMG := pack_intel
 BOARD_CUSTOM_BOOTIMG_MK := device/asus/z00d/mkbootimg.mk
 DEVICE_BASE_BOOT_IMAGE := device/asus/z00d/base_images/boot.img
