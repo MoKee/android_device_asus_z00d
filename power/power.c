@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 The CyanogenMod Project
+ * Copyright (c) 2017 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include <utils/SystemClock.h>
 #include <hardware/power.h>
 #include <hardware/hardware.h>
 
 #define LOG_TAG "PowerHAL"
 #include <utils/Log.h>
 
-#define TOTAL_CPUS 4
 #define POWERSAVE_MIN_FREQ 800000
 #define POWERSAVE_MAX_FREQ 933000
 #define BIAS_PERF_MIN_FREQ 1333000
 #define NORMAL_MAX_FREQ 1600000
 
-static pthread_mutex_t profile_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+static int boostpulse_fd = -1;
+static int boostpulse_warned;
 
 enum {
     PROFILE_POWER_SAVE = 0,
@@ -46,25 +46,13 @@ enum {
 
 static int current_power_profile = PROFILE_BALANCED;
 
-static char *cpu_path_min[] = {
-    (char *)"/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq",
-    (char *)"/sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq",
-    (char *)"/sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq",
-    (char *)"/sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq",
-};
-
-static char *cpu_path_max[] = {
-    (char *)"/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
-    (char *)"/sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq",
-    (char *)"/sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq",
-    (char *)"/sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq",
-};
-
-struct local_power_module {
-    struct power_module base;
-};
-
 #define BUF_SIZE 80
+
+#define BOOSTPULSE_PATH "/sys/devices/system/cpu/cpufreq/interactive/boostpulse"
+#define BOOST_PATH "/sys/devices/system/cpu/cpufreq/interactive/boost"
+
+#define CPU0_PATH "/sys/devices/system/cpu/cpu0"
+#define CPU2_PATH "/sys/devices/system/cpu/cpu2"
 
 static int sysfs_read(const char *path, char buf[BUF_SIZE]) {
     int len;
@@ -108,7 +96,28 @@ static void sysfs_write(const char *path, const char *const s) {
     close(fd);
 }
 
-static void power_set_interactive(struct power_module *, int on __unused) {
+static void power_set_interactive(__attribute__((unused)) struct power_module *module, int on) {
+}
+
+static int boostpulse_open()
+{
+    char buf[80];
+    int len;
+
+    pthread_mutex_lock(&lock);
+    if (boostpulse_fd < 0) {
+        boostpulse_fd = open(BOOSTPULSE_PATH, O_WRONLY);
+        if (boostpulse_fd < 0) {
+            if (!boostpulse_warned) {
+                strerror_r(errno, buf, sizeof(buf));
+                ALOGE("Error opening %s: %s\n", BOOSTPULSE_PATH, buf);
+                boostpulse_warned = 1;
+            }
+        }
+    }
+    pthread_mutex_unlock(&lock);
+
+    return boostpulse_fd;
 }
 
 static void sysfs_write_int(char *path, int value)
@@ -118,19 +127,18 @@ static void sysfs_write_int(char *path, int value)
     return sysfs_write(path, buf);
 }
 
-static void set_min_freq(int freq) {
-    for (int cpu = 0; cpu < TOTAL_CPUS; cpu++)
-	sysfs_write_int(cpu_path_min[cpu], freq);
+static void power_init(__attribute__((unused)) struct power_module *module) {
 }
 
-static void set_max_freq(int freq) {
-    for (int cpu = 0; cpu < TOTAL_CPUS; cpu++)
-        sysfs_write_int(cpu_path_max[cpu], freq);
+static void boost(int32_t duration) {
+    if (duration < 1)
+	return;
+
+    sysfs_write(BOOST_PATH, "1");
+    usleep(duration);
+    sysfs_write(BOOST_PATH, "0");
 }
 
-static void power_init(struct power_module *) {
-
-}
 
 static void set_power_profile(int profile) {
     int min_freq = POWERSAVE_MIN_FREQ;
@@ -159,8 +167,10 @@ static void set_power_profile(int profile) {
         break;
     }
 
-    set_min_freq(min_freq);
-    set_max_freq(max_freq);
+    sysfs_write_int(CPU0_PATH "/cpufreq/scaling_min_freq", min_freq);
+    sysfs_write_int(CPU0_PATH "/cpufreq/scaling_max_freq", max_freq);
+    sysfs_write_int(CPU2_PATH "/cpufreq/scaling_min_freq", min_freq);
+    sysfs_write_int(CPU2_PATH "/cpufreq/scaling_max_freq", max_freq);
 
     current_power_profile = profile;
 
@@ -170,10 +180,13 @@ static void set_power_profile(int profile) {
 static void power_hint( __attribute__((unused)) struct power_module *module,
                       power_hint_t hint, void *data)
 {
+    char buf[80];
+    int len;
+
     if (hint == POWER_HINT_SET_PROFILE) {
-        pthread_mutex_lock(&profile_lock);
+        pthread_mutex_lock(&lock);
         set_power_profile(*(int32_t *)data);
-        pthread_mutex_unlock(&profile_lock);
+        pthread_mutex_unlock(&lock);
         return;
     }
 
@@ -181,10 +194,23 @@ static void power_hint( __attribute__((unused)) struct power_module *module,
     if (current_power_profile == PROFILE_POWER_SAVE)
         return;
 
-    // unimplemented for now
     switch (hint) {
     case POWER_HINT_INTERACTION:
-        break;
+    case POWER_HINT_LAUNCH:
+        if (boostpulse_open() >= 0) {
+            len = write(boostpulse_fd, "1", 1);
+            if (len < 0) {
+                strerror_r(errno, buf, sizeof(buf));
+                ALOGE("Error writing to %s: %s\n", BOOSTPULSE_PATH, buf);
+            }
+        }
+	break;
+
+    case POWER_HINT_CPU_BOOST:
+	pthread_mutex_lock(&lock);
+	boost(*(int32_t *)data);
+	pthread_mutex_unlock(&lock);
+	break;
 
     case POWER_HINT_VSYNC:
         break;
@@ -218,23 +244,21 @@ static int get_feature(__attribute__((unused)) struct power_module *module,
     return -1;
 }
 
-struct local_power_module HAL_MODULE_INFO_SYM = {
-    .base = {
-       .common = {
-            .tag = HARDWARE_MODULE_TAG,
-            .module_api_version = POWER_MODULE_API_VERSION_0_3,
-            .hal_api_version = HARDWARE_HAL_API_VERSION,
-            .id = POWER_HARDWARE_MODULE_ID,
-            .name = "Mofd_v1 Power HAL",
-            .author = "The CyanogenMod Project",
-            .methods = &power_module_methods,
-            .dso = 0,
-            .reserved = {0},
-        },
-        .init = power_init,
-        .setInteractive = power_set_interactive,
-        .powerHint = power_hint,
-        .setFeature = set_feature,
-        .getFeature = get_feature,
-    },
+struct power_module HAL_MODULE_INFO_SYM = {
+    .common = {
+         .tag = HARDWARE_MODULE_TAG,
+         .module_api_version = POWER_MODULE_API_VERSION_0_3,
+         .hal_api_version = HARDWARE_HAL_API_VERSION,
+         .id = POWER_HARDWARE_MODULE_ID,
+         .name = "Clovertrail Power HAL",
+         .author = "The LineageOS Project",
+         .methods = &power_module_methods,
+         .dso = 0,
+         .reserved = {0},
+     },
+     .init = power_init,
+     .setInteractive = power_set_interactive,
+     .powerHint = power_hint,
+     .setFeature = set_feature,
+     .getFeature = get_feature,
 };
