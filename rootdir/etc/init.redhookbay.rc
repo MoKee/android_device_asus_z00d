@@ -55,6 +55,9 @@ on init
     write /dev/cpuset/foreground/cpus 0-3
     write /dev/cpuset/cpus 0-3
 
+    # Read one page at a time for swap (default is 8)
+    write /proc/sys/vm/page-cluster 0
+
 on boot
 
 #  Permissions for Thermal Management

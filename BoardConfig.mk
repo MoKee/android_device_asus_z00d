@@ -47,11 +47,12 @@ WITH_CM_CHARGER := false
 BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_HEALTHD_CUSTOM_CHARGER_RES := device/asus/z00d/charger/images
 
-# Dex-preoptimization: Speeds up initial boot (if we ever o a user build, which we don't)
+# Dex-preoptimization
 ifeq ($(HOST_OS),linux)
-  ifeq ($(TARGET_BUILD_VARIANT),user)
+  ifneq ($(TARGET_BUILD_VARIANT),eng)
     ifeq ($(WITH_DEXPREOPT),)
       WITH_DEXPREOPT := true
+      WITH_DEXPREOPT_BOOT_IMG_ONLY := true
     endif
   endif
 endif
@@ -150,6 +151,6 @@ WIFI_DRIVER_FW_PATH_PARAM   := "/sys/module/bcmdhd/parameters/firmware_path"
 WIFI_DRIVER_FW_PATH_AP      := "/asusfw/wifi/fw_bcmdhd_apsta.bin"
 WIFI_DRIVER_FW_PATH_STA     := "/asusfw/wifi/fw_bcmdhd.bin"
 
-# Use the non-open-source parts, if they're present
--include vendor/asus/z00d/BoardConfigVendor.mk
+# Use the non-open-source parts
+include vendor/asus/z00d/BoardConfigVendor.mk
 

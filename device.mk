@@ -264,7 +264,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     device/asus/z00d/configs/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf
 
-$(call inherit-product-if-exists, vendor/asus/z00d/z00d-vendor.mk)
+$(call inherit-product, vendor/asus/z00d/z00d-vendor.mk)
 
 # Intel_updater
 PRODUCT_PACKAGES += \
